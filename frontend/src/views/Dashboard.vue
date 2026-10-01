@@ -25,6 +25,18 @@
         </tr>
       </tbody>
     </table>
+
+    <section class="overview-waterbody" v-if="waterbody">
+      <h3>水体水质看板（与水体详情页同源）</h3>
+      <p class="page-desc">
+        共 {{ waterbody.total }} 片水体：
+        良好 {{ waterbody.grades['良好'] ?? 0 }}，
+        轻度污染 {{ waterbody.grades['轻度污染'] ?? 0 }}，
+        重度污染 {{ waterbody.grades['重度污染'] ?? 0 }}，
+        净化中 {{ waterbody.purifying }}，已净化 {{ waterbody.purified }}。
+      </p>
+      <RouterLink class="link" :to="{ name: 'waterbody' }">前往水体养护核对最新水质 →</RouterLink>
+    </section>
   </section>
 </template>
 
@@ -36,16 +48,26 @@ import { fetchJson } from '@/api/client'
 type Overview = {
   cards: { label: string; value: number }[]
   modules: { name: string; created: number; pending: number; abnormal: number }[]
+  waterbody?: WaterbodyOverview
+}
+
+type WaterbodyOverview = {
+  total: number
+  grades: Record<string, number>
+  purifying: number
+  purified: number
 }
 
 const cards = ref<Overview['cards']>([])
 const moduleRows = ref<Overview['modules']>([])
+const waterbody = ref<WaterbodyOverview | null>(null)
 
 onMounted(async () => {
   try {
     const payload = await fetchJson<Overview>('/api/overview')
     cards.value = payload.cards
     moduleRows.value = payload.modules
+    waterbody.value = payload.waterbody ?? null
   } catch {
     cards.value = [{"label": "业务模块", "value": 0}, {"label": "今日新增", "value": 0}]
     moduleRows.value = [{"name": "绿地台账", "created": 0, "pending": 0, "abnormal": 0}, {"name": "乔木管理", "created": 0, "pending": 0, "abnormal": 0}, {"name": "灌木管理", "created": 0, "pending": 0, "abnormal": 0}, {"name": "草坪管理", "created": 0, "pending": 0, "abnormal": 0}, {"name": "花卉造景", "created": 0, "pending": 0, "abnormal": 0}, {"name": "病虫害防治", "created": 0, "pending": 0, "abnormal": 0}, {"name": "灌溉作业", "created": 0, "pending": 0, "abnormal": 0}, {"name": "施肥作业", "created": 0, "pending": 0, "abnormal": 0}, {"name": "修剪造型", "created": 0, "pending": 0, "abnormal": 0}, {"name": "绿地巡查", "created": 0, "pending": 0, "abnormal": 0}, {"name": "杂草清除", "created": 0, "pending": 0, "abnormal": 0}, {"name": "树木支撑", "created": 0, "pending": 0, "abnormal": 0}, {"name": "苗木移植", "created": 0, "pending": 0, "abnormal": 0}, {"name": "园建设施", "created": 0, "pending": 0, "abnormal": 0}, {"name": "园林机械", "created": 0, "pending": 0, "abnormal": 0}, {"name": "苗木基地", "created": 0, "pending": 0, "abnormal": 0}, {"name": "水体养护", "created": 0, "pending": 0, "abnormal": 0}, {"name": "名木古树", "created": 0, "pending": 0, "abnormal": 0}, {"name": "市民热线", "created": 0, "pending": 0, "abnormal": 0}, {"name": "季度养护方案", "created": 0, "pending": 0, "abnormal": 0}]

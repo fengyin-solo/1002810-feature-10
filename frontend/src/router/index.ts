@@ -18,6 +18,7 @@ const Facility = () => import('@/views/facility/index.vue')
 const Equipment = () => import('@/views/equipment/index.vue')
 const Seedling = () => import('@/views/seedling/index.vue')
 const Waterbody = () => import('@/views/waterbody/index.vue')
+const WaterbodyDetail = () => import('@/views/waterbody/detail.vue')
 const Code = () => import('@/views/code/index.vue')
 const Complaint = () => import('@/views/complaint/index.vue')
 const Seasonplan = () => import('@/views/seasonplan/index.vue')
@@ -43,6 +44,7 @@ const router = createRouter({
     { path: '/equipment', name: 'equipment', component: Equipment },
     { path: '/seedling', name: 'seedling', component: Seedling },
     { path: '/waterbody', name: 'waterbody', component: Waterbody },
+    { path: '/waterbody/:id', name: 'waterbody-detail', component: WaterbodyDetail },
     { path: '/code', name: 'code', component: Code },
     { path: '/complaint', name: 'complaint', component: Complaint },
     { path: '/seasonplan', name: 'seasonplan', component: Seasonplan },

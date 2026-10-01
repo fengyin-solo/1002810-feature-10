@@ -43,7 +43,31 @@ class Store:
             {"label": "待处理", "value": sum(int(item["pending"]) for item in modules)},
             {"label": "异常量", "value": sum(int(item["abnormal"]) for item in modules)},
         ]
-        return {"cards": cards, "modules": modules}
+        waterbody = self._waterbody_overview()
+        return {"cards": cards, "modules": modules, "waterbody": waterbody}
+
+    def _waterbody_overview(self) -> dict[str, object]:
+        """工作台的水质等级直接取水体台账同一条记录，不另存一份。"""
+        grades = ["良好", "轻度污染", "重度污染"]
+        rows = self.rows("waterbody")
+        grade_counts = {grade: 0 for grade in grades}
+        purifying = 0
+        purified = 0
+        for row in rows:
+            grade = str(row.get("水质等级") or "")
+            if grade in grade_counts:
+                grade_counts[grade] += 1
+            status = str(row.get("status") or "")
+            if status == "净化中":
+                purifying += 1
+            if status == "已净化":
+                purified += 1
+        return {
+            "total": len(rows),
+            "grades": grade_counts,
+            "purifying": purifying,
+            "purified": purified,
+        }
 
 
 store = Store()
