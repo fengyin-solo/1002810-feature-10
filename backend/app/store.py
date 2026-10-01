@@ -21,6 +21,12 @@ class Store:
     def rows(self, module: str) -> list[dict[str, Any]]:
         return self._tables.setdefault(module, [])
 
+    def reset(self) -> None:
+        """用种子数据重置全部模块：主要供测试用例之间回到干净的初始状态。"""
+        self._tables = {
+            name: [dict(row) for row in rows] for name, rows in SEED_ROWS.items()
+        }
+
     def find(self, module: str, entry_id: int) -> dict[str, Any] | None:
         for row in self.rows(module):
             if int(row.get("id", 0)) == entry_id:
